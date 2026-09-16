@@ -3,7 +3,7 @@ from flask import Flask
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
-BOT_TOKEN =BOT_TOKEN = "8800142582:AAFL_qBn7twMzg95agFyOhRvpj6xL2Zu1Ug"
+BOT_TOKEN = "8800142582:AAFL_qBn7twMzg95agFyOhRvpj6xL2Zu1Ug"
 ADMIN_ID = 8651676357
 
 app = Flask(__name__)
