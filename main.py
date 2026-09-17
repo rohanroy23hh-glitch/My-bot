@@ -1,41 +1,31 @@
-import os, json, threading
+import os
 from flask import Flask
+from threading import Thread
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-ADMIN_ID = 8651676357
+flask_app = Flask(__name__)
 
-app = Flask(__name__)
-
-@app.route('/')
+@flask_app.route('/')
 def home():
-    return "Bot Running! ✅"
-
-def load_users():
-    try:
-        with open("users.json","r") as f:
-            return json.load(f)
-    except: return {}
-
-def save_users(d):
-    with open("users.json","w") as f:
-        json.dump(d,f)
+    return "Bot is Live!"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    users=load_users()
-    uid=str(update.effective_user.id)
-    if uid not in users:
-        users[uid]={"balance":0,"refers":0}
-        save_users(users)
-    await update.message.reply_text(f"Bot is Alive! ✅ ID: {uid}")
+    user = update.effective_user
+    ref = context.args[0] if context.args else "No refer"
+    await update.message.reply_text(f"Hello {user.first_name}! ✅\nYour Refer: {ref}\nBot is Finally Working!")
 
 def run_bot():
-    application = Application.builder().token(BOT_TOKEN).build()
-    application.add_handler(CommandHandler("start", start))
-    application.run_polling()
+    if not BOT_TOKEN:
+        print("BOT_TOKEN missing!")
+        return
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    print("Bot polling started...")
+    app.run_polling()
 
 if __name__ == "__main__":
-    threading.Thread(target=run_bot, daemon=True).start()
+    Thread(target=run_bot).start()
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    flask_app.run(host="0.0.0.0", port=port)
